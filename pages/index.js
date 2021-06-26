@@ -1,10 +1,7 @@
-import fs from 'fs'
-import path from 'path'
-import matter from 'gray-matter'
 import Link from 'next/link'
-import Layout from '../components/Layout'
-import Post from '../components/Post'
-import { sortByDate } from '../utils'
+import Layout from '@/components/Layout'
+import Post from '@/components/Post'
+import { getPosts } from '@/lib/posts'
 
 export default function HomePage({posts}) {
   //console.log(posts)
@@ -28,7 +25,6 @@ export default function HomePage({posts}) {
 }
 
 export async function getStaticProps() {
-  const files = fs.readdirSync(path.join('posts'))
   //console.log(files)
   //outputs files object with array of md files in posts folder
   // [
@@ -41,28 +37,14 @@ export async function getStaticProps() {
   //   'writing-great-unit-tests.md'
   // ]
 
-  // map thru the files array
-  const posts = files.map(filename => {
-    const slug = filename.replace('.md', '')
-
-    // parse into an object
-    const markdownWithMeta = fs.readFileSync(path.join('posts', filename), 'utf-8')
-
-
-    const {data:frontmatter} = matter(markdownWithMeta)
-
-    return {
-      slug,
-      frontmatter
-    }
-  })
+  
 
 //  console.log(posts)
 
   return {
     props: {
       /* sort by recent date and display only 6 posts */
-      posts: posts.sort(sortByDate).slice(0, 6)
+      posts: getPosts().slice(0, 6)//posts.sort(sortByDate).slice(0, 6)
     },
   }
 }
